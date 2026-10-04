@@ -1,0 +1,179 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Chaiwala Co. — Step 4 Final Calendar Builder</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f6ebdd;
+            margin: 0;
+            color: #2f4b3a
+        }
+
+        header {
+            background: #2f4b3a;
+            color: white;
+            padding: 24px
+        }
+
+        main {
+            max-width: 1500px;
+            margin: 20px auto;
+            padding: 0 16px
+        }
+
+        .card {
+            background: white;
+            border-radius: 14px;
+            padding: 18px;
+            margin-bottom: 18px;
+            box-shadow: 0 3px 14px #0001
+        }
+
+        button {
+            padding: 10px 14px;
+            border: 0;
+            border-radius: 8px;
+            background: #b5523b;
+            color: #fff;
+            font-weight: 700;
+            cursor: pointer;
+            margin: 4px
+        }
+
+        button.secondary {
+            background: #2f4b3a
+        }
+
+        select {
+            padding: 9px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            margin: 4px
+        }
+
+        .metrics {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap
+        }
+
+        .metric {
+            padding: 12px 16px;
+            background: #f6ebdd;
+            border-radius: 10px
+        }
+
+        .table-wrap {
+            overflow: auto;
+            max-height: 650px
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            min-width: 1300px
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+            vertical-align: top
+        }
+
+        th {
+            background: #2f4b3a;
+            color: white;
+            position: sticky;
+            top: 0
+        }
+
+        .pass {
+            color: #24713a;
+            font-weight: 700
+        }
+
+        .warn {
+            color: #9a6b1f;
+            font-weight: 700
+        }
+
+        @media print {
+
+            button,
+            select,
+            label {
+                display: none
+            }
+
+            .card {
+                box-shadow: none
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Chaiwala Co. — Step 4: Final 30-Day Calendar Builder</h1>
+        <p>Monsoon Adrak Chai | Ghar jaisi chai, har jagah</p>
+    </header>
+    <main>
+        <div class="card">
+            <h2>Final calendar controls</h2><label>Persona <select id="persona">
+                    <option>ALL</option>
+                    <option>P1</option>
+                    <option>P2</option>
+                    <option>P3</option>
+                    <option>P4</option>
+                    <option>P5</option>
+                </select></label><label>Channel <select id="channel">
+                    <option>ALL</option>
+                    <option>Instagram</option>
+                    <option>YouTube</option>
+                    <option>LinkedIn</option>
+                    <option>Facebook</option>
+                    <option>WhatsApp</option>
+                    <option>Email</option>
+                </select></label><label>Objective <select id="objective">
+                    <option>ALL</option>
+                    <option>Awareness</option>
+                    <option>Engagement</option>
+                    <option>Consideration</option>
+                    <option>Conversion</option>
+                </select></label><button onclick="render()">Apply filters</button><button class="secondary"
+                onclick="exportCSV()">Export final calendar CSV</button><button class="secondary"
+                onclick="window.print()">Print / Save as PDF</button>
+        </div>
+        <div class="card">
+            <h2>Step 4 verification</h2>
+            <div class="metrics" id="metrics"></div>
+            <div id="checks"></div>
+        </div>
+        <div class="card">
+            <h2>30-Day Calendar</h2>
+            <div class="table-wrap">
+                <table id="tbl"></table>
+            </div>
+        </div>
+        <div class="card">
+            <h2>Submission note</h2>
+            <p>The faculty workbook remains the source of truth. This Step 4 build uses the exact Brand Brief, Personas
+                and Products data from the supplied workbook, and the completed workbook adds the generated calendar, 10
+                full posts and a verification sheet as new sheets.</p>
+        </div>
+    </main>
+    <script>
+        const data = [{ "Day": 1, "Week": "Week 1", "Persona ID": "P1", "Persona": "Hostel student", "Channel": "Instagram", "Product": "Monsoon Adrak Chai premix 250g", "Price (INR)": 249, "Content Pillar": "Lifestyle", "Format": "Reel", "Topic": "Rainy-night study chai", "Hook": "Rain outside? Chai inside.", "Objective": "Awareness", "CTA": "Try the monsoon chai moment.", "Tone": "Warm, witty, slightly nostalgic; Hinglish allowed", "Status": "Planned" }, { "Day": 2, "Week": "Week 1", "Persona ID": "P2", "Persona": "Young working professional", "Channel": "Instagram", "Product": "Chai subscription (monthly)", "Price (INR)": 349, "Content Pillar": "Product", "Format": "Carousel", "Topic": "WFH chai break", "Hook": "Some meetings need chai, not another meeting.", "Objective": "Awareness", "CTA": "Save this chai idea.", "Tone": "Warm, witty, slightly nostalgic; Hinglish allowed", "Status": "Planned" }, { "Day": 3, "Week": "Week 1", "Persona ID": "P3", "Persona": "Homemaker", "Channel": "Facebook", "Product": "Elaichi Chai 250g", "Price (INR)": 229, "Content Pillar": "Gifting", "Format": "Carousel", "Topic": "Easy chai for unexpected guests", "Hook": "Ghar wali chai ki feeling, wherever the day takes you.", "Objective": "Awareness", "CTA": "Share this with your chai buddy.", "Tone": "Warm, witty, slightly nostalgic; Hinglish allowed", "Status": "Planned" }, { "Day": 4, "Week": "Week 1", "Persona ID": "P4", "Persona": "Cafe-hopper", "Channel": "Instagram", "Product": "Chai subscription (monthly)", "Price (INR)": 349, "Content Pillar": "Product", "Format": "Story", "Topic": "Monsoon chai photo moment", "Hook": "Monsoon mood: activated.", "Objective": "Awareness", "CTA": "Explore the range.", "Tone": "Warm, witty, slightly nostalgic; Hinglish allowed", "Status": "Planned" }, { "Day": 5, "Week": "Week 1", "Persona ID": "P5", "Persona": "Corporate gifting manager", "Channel": "LinkedIn", "Product": "Elaichi Chai 250g", "Price (INR)": 229, "Content Pillar": "Gifting", "Format": "Carousel", "Topic": "Corporate festive gifting with chai", "Hook": "One cup, one pause, one better moment.", "Objective": "Awareness", "CTA": "Add it to your next chai break.", "Tone": "Warm, witty, slightly nostalgic; Hinglish allowed", "Status": "Planned" }, { "Day": 6, "Week": "Week 1", "Persona ID": "P2", "Persona": "Young working professional", "Channel": "LinkedIn", "Product": "Chai subscription (monthly)", "Price (INR)": 349, "Content Pillar": "Product", "Format": "Document post", "Topic": "Busy morning chai ritual", "Hook": "A little warmth goes a long way.", "Objective": "Awareness", "CTA": "Ask about the product.", "Tone": "Warm, witty, slightly nostalgic; Hinglish allowed", "Status": "Planned" }, { "Day": 7, "Week": "Week 1", "Persona ID": "P1", "Persona": "Hostel student", "Channel": "YouTube", "Product": "Elaichi Chai 250g", "Price (INR)": 229, "Content Pillar": "Product", "Format": "Short", "Topic": "Chai break between lectures", "Hook": "Chai first. Everything else can wait.", "Objective": "Awareness", "CTA": "Plan your next chai moment.", "Tone": "Warm, witty, slightly nostalgic; Hinglish allowed", "Status": "Planned" }, { "Day": 8, "Week": "Week 2", "Persona ID": "P3", "Persona": "Homemaker", "Channel": "WhatsApp", "Product": "Chai subscription (monthly)", "Price (INR)": 349, "Content Pillar": "Educational", "Format": "Status", "Topic": "Monsoon evening chai at home", "Hook": "Rain + chai = a classic combo.", "Objective": "Awareness", "CTA": "Make chai-time yours.", "Tone": "Warm, witty, slightly nostalgic; Hinglish allowed", "Status": "Planned" }, { "Day": 9, "Week": "Week 2", "Persona ID": "P4", "Persona": "Cafe-hopper", "Channel": "Instagram", "Product": "Elaichi Chai 250g", "Price (INR)": 229, "Content Pillar": "Experience", "Format": "Reel", "Topic": "Kulhad chai aesthetic", "Hook": "For moments worth slowing down for.", "Objective": "Engagement", "CTA": "Try the monsoon chai moment.", "Tone": "Warm, witty, slightly nostalgic; Hinglish allowed", "Status": "Planned" }, { "Day": 10, "Week": "Week 2", "Persona ID": "P5", "Persona": "Corporate gifting manager", "Channel": "Email", "Product": "Chai subscription (monthly)", "Price (INR)": 349, "Content Pillar": "Product", "Format": "Product spotlight", "Topic": "Bulk chai gifting checklist", "Hook": "Bring a little ghar to the workday.", "Objective": "Engagement", "CTA": "Save this chai idea.", "Tone": "Warm, witty, slightly nostalgic; Hinglish allowed", "Status": "Planned" }, { "Day": 11, "Week": "Week 2", "Persona ID": "P2", "Persona": "Young working professional", "Channel": "Instagram", "Product": "Elaichi Chai 250g", "Price (INR)": 229, "Content Pillar": "Educational", "Format": "Static post", "Topic": "The five-minute chai reset", "Hook": "Rain outside? Chai inside.", "Objective": "Engagement", "CTA": "Share this with your chai buddy.", "Tone": "Warm, witty, slightly nostalgic; Hinglish allowed", "Status": "Planned" }, { "Day": 12, "Week": "Week 2", "Persona ID": "P1", "Persona": "Hostel student", "Channel": "Instagram", "Product": "Chai subscription (monthly)", "Price (INR)": 349, "Content Pillar": "Educational", "Format": "Story", "Topic": "Budget-friendly monsoon chai moment", "Hook": "Some meetings need chai, not another meeting.", "Objective": "Engagement", "CTA": "Explore the range.", "Tone": "Warm, witty, slightly nostalgic; Hinglish allowed", "Status": "Planned" }, { "Day": 13, "Week": "Week 2", "Persona ID": "P3", "Persona": "Homemaker", "Channel": "Facebook", "Product": "Elaichi Chai 250g", "Price (INR)": 229, "Content Pillar": "Product", "Format": "Image post", "Topic": "Serving chai with snacks", "Hook": "Ghar wali chai ki feeling, wherever the day takes you.", "Objective": "Engagement", "CTA": "Add it to your next chai break.", "Tone": "Warm, witty, slightly nostalgic; Hinglish allowed", "Status": "Planned" }, { "Day": 14, "Week": "Week 2", "Persona ID": "P4", "Persona": "Cafe-hopper", "Channel": "Instagram", "Product": "Chai subscription (monthly)", "Price (INR)": 349, "Content Pillar": "Lifestyle", "Format": "Carousel", "Topic": "Cafe-style chai at home", "Hook": "Monsoon mood: activated.", "Objective": "Engagement", "CTA": "Ask about the product.", "Tone": "Warm, witty, slightly nostalgic; Hinglish allowed", "Status": "Planned" }, { "Day": 15, "Week": "Week 3", "Persona ID": "P2", "Persona": "Young working professional", "Channel": "LinkedIn", "Product": "Elaichi Chai 250g", "Price (INR)": 229, "Content Pillar": "Educational", "Format": "Document post", "Topic": "Missing ghar ki chai while working", "Hook": "One cup, one pause, one better moment.", "Objective": "Engagement", "CTA": "Plan your next chai moment.", "Tone": "Warm, witty, slightly nostalgic; Hinglish allowed", "Status": "Planned" }, { "Day": 16, "Week": "Week 3", "Persona ID": "P5", "Persona": "Corporate gifting manager", "Channel": "LinkedIn", "Product": "Chai subscription (monthly)", "Price (INR)": 349, "Content Pillar": "Engagement", "Format": "Text post", "Topic": "A warm welcome gift for teams", "Hook": "A little warmth goes a long way.", "Objective": "Consideration", "CTA": "Make chai-time yours.", "Tone": "Warm, witty, slightly nostalgic; Hinglish allowed", "Status": "Planned" }, { "Day": 17, "Week": "Week 3", "Persona ID": "P1", "Persona": "Hostel student", "Channel": "YouTube", "Product": "Elaichi Chai 250g", "Price (INR)": 229, "Content Pillar": "Lifestyle", "Format": "Short", "Topic": "Hostel room chai ritual", "Hook": "Chai first. Everything else can wait.", "Objective": "Consideration", "CTA": "Try the monsoon chai moment.", "Tone": "Warm, witty, slightly nostalgic; Hinglish allowed", "Status": "Planned" }, { "Day": 18, "Week": "Week 3", "Persona ID": "P3", "Persona": "Homemaker", "Channel": "WhatsApp", "Product": "Chai subscription (monthly)", "Price (INR)": 349, "Content Pillar": "Lifestyle", "Format": "Status", "Topic": "A simple chai-time hosting idea", "Hook": "Rain + chai = a classic combo.", "Objective": "Consideration", "CTA": "Save this chai idea.", "Tone": "Warm, witty, slightly nostalgic; Hinglish allowed", "Status": "Planned" }, { "Day": 19, "Week": "Week 3", "Persona ID": "P4", "Persona": "Cafe-hopper", "Channel": "Instagram", "Product": "Elaichi Chai 250g", "Price (INR)": 229, "Content Pillar": "Engagement", "Format": "Static post", "Topic": "Rainy-day chai and snacks", "Hook": "For moments worth slowing down for.", "Objective": "Consideration", "CTA": "Share this with your chai buddy.", "Tone": "Warm, witty, slightly nostalgic; Hinglish allowed", "Status": "Planned" }, { "Day": 20, "Week": "Week 3", "Persona ID": "P2", "Persona": "Young working professional", "Channel": "Instagram", "Product": "Chai subscription (monthly)", "Price (INR)": 349, "Content Pillar": "Engagement", "Format": "Story", "Topic": "Monsoon workday moment", "Hook": "Bring a little ghar to the workday.", "Objective": "Consideration", "CTA": "Explore the range.", "Tone": "Warm, witty, slightly nostalgic; Hinglish allowed", "Status": "Planned" }, { "Day": 21, "Week": "Week 3", "Persona ID": "P1", "Persona": "Hostel student", "Channel": "Instagram", "Product": "Elaichi Chai 250g", "Price (INR)": 229, "Content Pillar": "Lifestyle", "Format": "Reel", "Topic": "Exam-season chai conversation", "Hook": "Rain outside? Chai inside.", "Objective": "Consideration", "CTA": "Add it to your next chai break.", "Tone": "Warm, witty, slightly nostalgic; Hinglish allowed", "Status": "Planned" }, { "Day": 22, "Week": "Week 4", "Persona ID": "P3", "Persona": "Homemaker", "Channel": "Facebook", "Product": "Chai subscription (monthly)", "Price (INR)": 349, "Content Pillar": "Lifestyle", "Format": "Image post", "Topic": "Chai conversation with family", "Hook": "Some meetings need chai, not another meeting.", "Objective": "Consideration", "CTA": "Ask about the product.", "Tone": "Warm, witty, slightly nostalgic; Hinglish allowed", "Status": "Planned" }, { "Day": 23, "Week": "Week 4", "Persona ID": "P5", "Persona": "Corporate gifting manager", "Channel": "Email", "Product": "Elaichi Chai 250g", "Price (INR)": 229, "Content Pillar": "Business", "Format": "Email", "Topic": "Planning festival hampers", "Hook": "Ghar wali chai ki feeling, wherever the day takes you.", "Objective": "Engagement", "CTA": "Plan your next chai moment.", "Tone": "Warm, witty, slightly nostalgic; Hinglish allowed", "Status": "Planned" }, { "Day": 24, "Week": "Week 4", "Persona ID": "P4", "Persona": "Cafe-hopper", "Channel": "Instagram", "Product": "Chai subscription (monthly)", "Price (INR)": 349, "Content Pillar": "Product", "Format": "Story", "Topic": "Chai corner photo challenge", "Hook": "Monsoon mood: activated.", "Objective": "Engagement", "CTA": "Make chai-time yours.", "Tone": "Warm, witty, slightly nostalgic; Hinglish allowed", "Status": "Planned" }, { "Day": 25, "Week": "Week 4", "Persona ID": "P2", "Persona": "Young working professional", "Channel": "LinkedIn", "Product": "Elaichi Chai 250g", "Price (INR)": 229, "Content Pillar": "Lifestyle", "Format": "Text post", "Topic": "Chai between back-to-back meetings", "Hook": "One cup, one pause, one better moment.", "Objective": "Engagement", "CTA": "Try the monsoon chai moment.", "Tone": "Warm, witty, slightly nostalgic; Hinglish allowed", "Status": "Planned" }, { "Day": 26, "Week": "Week 4", "Persona ID": "P1", "Persona": "Hostel student", "Channel": "YouTube", "Product": "Chai subscription (monthly)", "Price (INR)": 349, "Content Pillar": "Engagement", "Format": "How-to video", "Topic": "Quick-commerce chai break", "Hook": "A little warmth goes a long way.", "Objective": "Engagement", "CTA": "Save this chai idea.", "Tone": "Warm, witty, slightly nostalgic; Hinglish allowed", "Status": "Planned" }, { "Day": 27, "Week": "Week 4", "Persona ID": "P3", "Persona": "Homemaker", "Channel": "WhatsApp", "Product": "Elaichi Chai 250g", "Price (INR)": 229, "Content Pillar": "Gifting", "Format": "Short message", "Topic": "Everyday chai shelf essential", "Hook": "Chai first. Everything else can wait.", "Objective": "Conversion", "CTA": "Share this with your chai buddy.", "Tone": "Warm, witty, slightly nostalgic; Hinglish allowed", "Status": "Planned" }, { "Day": 28, "Week": "Week 4", "Persona ID": "P4", "Persona": "Cafe-hopper", "Channel": "Instagram", "Product": "Chai subscription (monthly)", "Price (INR)": 349, "Content Pillar": "Product", "Format": "Story", "Topic": "The perfect monsoon chai setup", "Hook": "Rain + chai = a classic combo.", "Objective": "Conversion", "CTA": "Explore the range.", "Tone": "Warm, witty, slightly nostalgic; Hinglish allowed", "Status": "Planned" }, { "Day": 29, "Week": "Week 5", "Persona ID": "P2", "Persona": "Young working professional", "Channel": "Instagram", "Product": "Elaichi Chai 250g", "Price (INR)": 229, "Content Pillar": "Lifestyle", "Format": "Reel", "Topic": "WFH chai break — angle 29", "Hook": "For moments worth slowing down for.", "Objective": "Conversion", "CTA": "Add it to your next chai break.", "Tone": "Warm, witty, slightly nostalgic; Hinglish allowed", "Status": "Planned" }, { "Day": 30, "Week": "Week 5", "Persona ID": "P5", "Persona": "Corporate gifting manager", "Channel": "LinkedIn", "Product": "Chai subscription (monthly)", "Price (INR)": 349, "Content Pillar": "Product", "Format": "Document post", "Topic": "Office chai moments", "Hook": "Bring a little ghar to the workday.", "Objective": "Conversion", "CTA": "Ask about the product.", "Tone": "Warm, witty, slightly nostalgic; Hinglish allowed", "Status": "Planned" }];
+        function esc(s) { return String(s).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;') }
+        function filtered() { let p = document.getElementById('persona').value, c = document.getElementById('channel').value, o = document.getElementById('objective').value; return data.filter(r => (p === 'ALL' || r['Persona ID'] === p) && (c === 'ALL' || r.Channel === c) && (o === 'ALL' || r.Objective === o)) }
+        function render() { let d = filtered(); let h = ["Day", "Week", "Persona ID", "Persona", "Channel", "Product", "Price (INR)", "Content Pillar", "Format", "Topic", "Hook", "Objective", "CTA", "Tone", "Status"]; document.getElementById('tbl').innerHTML = '<thead><tr>' + h.map(x => '<th>' + esc(x) + '</th>').join('') + '</tr></thead><tbody>' + d.map(r => '<tr>' + h.map(x => '<td>' + esc(r[x]) + '</td>').join('') + '</tr>').join('') + '</tbody>'; let full = data; let topics = new Set(full.map(r => r.Topic)); let checks = [['30 rows generated', full.length === 30], ['5 personas represented', new Set(full.map(r => r['Persona ID'])).size === 5], ['Valid persona/channel pairs', full.every(r => ['P1', 'P2', 'P3', 'P4', 'P5'].includes(r['Persona ID']))], ['30 unique topics', topics.size === 30], ['4 objectives represented', new Set(full.map(r => r.Objective)).size === 4], ['Hero product included', full.some(r => r.Product === 'Monsoon Adrak Chai premix 250g')], ['4+ products included', new Set(full.map(r => r.Product)).size >= 4], ['Every row has CTA + format', full.every(r => r.CTA && r.Format)]]; document.getElementById('metrics').innerHTML = '<div class="metric"><b>Rows:</b> ' + d.length + ' / 30</div><div class="metric"><b>Personas:</b> ' + new Set(full.map(r => r['Persona ID'])).size + '</div><div class="metric"><b>Channels:</b> ' + new Set(full.map(r => r.Channel)).size + '</div><div class="metric"><b>Unique topics:</b> ' + topics.size + '</div><div class="metric"><b>Checks:</b> ' + checks.filter(x => x[1]).length + '/' + checks.length + '</div>'; document.getElementById('checks').innerHTML = '<ul>' + checks.map(x => '<li class="' + (x[1] ? 'pass' : 'warn') + '">' + x[0] + ': ' + (x[1] ? 'PASS' : 'REVISE') + '</li>').join('') + '</ul>' }
+        function exportCSV() { let d = filtered(), h = ["Day", "Week", "Persona ID", "Persona", "Channel", "Product", "Price (INR)", "Content Pillar", "Format", "Topic", "Hook", "Objective", "CTA", "Tone", "Status"]; let csv = [h, ...d.map(r => h.map(k => String(r[k]).replaceAll('"', '""')))].map(row => row.map(x => '"' + x + '"').join(',')).join('\n'); let a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' })); a.download = 'Chaiwala_Final_30_Day_Calendar_Step4.csv'; a.click() }</script>
+</body>
+
+</html>

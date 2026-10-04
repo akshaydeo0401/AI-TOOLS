@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chaiwala Co. | AI-Assisted Content Calendar Generator</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f5f1eb;color:#2d211b}
+header{background:#4a2c20;color:#fff;padding:28px 5%}
+header h1{margin:0 0 7px;font-size:28px}
+header p{margin:0;opacity:.9}
+main{width:94%;max-width:1450px;margin:22px auto 50px}
+.card{background:#fff;border-radius:12px;padding:22px;margin-bottom:20px;box-shadow:0 2px 10px rgba(0,0,0,.07)}
+h2{margin-top:0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:15px}
+label{font-weight:700;display:block;margin-bottom:7px}
+select,input,textarea,button{width:100%;padding:10px;border:1px solid #cfc6bd;border-radius:7px;font-size:14px}
+textarea{min-height:140px;resize:vertical}
+button{border:0;background:#74472b;color:#fff;font-weight:700;cursor:pointer}
+button:hover{opacity:.9}
+.secondary{background:#686868}.success{background:#3d7048}.warning{background:#9a6b1f}.danger{background:#9b4038}
+.button-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.button-row button{width:auto;min-width:155px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:15px}
+.tab{width:auto;background:#ddd2c7;color:#2d211b}
+.tab.active{background:#74472b;color:#fff}
+.panel{display:none}.panel.active{display:block}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
+.stat{background:#eee7df;padding:15px;border-radius:8px}
+.stat strong{display:block;font-size:25px;margin-top:5px}
+.table-wrap{overflow:auto;max-height:650px}
+table{border-collapse:collapse;width:100%;min-width:1250px}
+th,td{border:1px solid #ddd5cd;padding:8px;text-align:left;vertical-align:top;font-size:12.5px}
+th{background:#eee7df;position:sticky;top:0;z-index:1}
+.pass{color:#24713a;font-weight:700}.revise{color:#a03831;font-weight:700}
+.note{background:#fff7df;border-left:4px solid #c79b38;padding:12px;margin-top:12px}
+.promptbox{background:#f7f4f0;padding:15px;border-radius:8px;white-space:pre-wrap;font-family:Consolas,monospace;font-size:12px;max-height:450px;overflow:auto}
+.small{font-size:12px;color:#6b625c}
+.badge{display:inline-block;padding:3px 7px;border-radius:12px;background:#eee7df;margin:2px}
+.metric-good{color:#24713a;font-weight:700}.metric-warn{color:#9a6b1f;font-weight:700}
+footer{text-align:center;color:#6b625c;padding:15px}
+@media(max-width:700px){header h1{font-size:21px}.button-row button{width:100%}}
+</style>
+</head>
+<body>
+<header>
+<h1>Chaiwala Co. — AI-Assisted 30-Day Content Calendar Generator</h1>
+<p>Monsoon Adrak Chai campaign | "Ghar jaisi chai, har jagah"</p>
+</header>
+
+<main>
+<div class="tabs">
+<button class="tab active" onclick="showTab('generator',this)">1. Generator</button>
+<button class="tab" onclick="showTab('prompt',this)">2. AI Prompt Studio</button>
+<button class="tab" onclick="showTab('quality',this)">3. Quality Control</button>
+<button class="tab" onclick="showTab('posts',this)">4. 10 Full Posts</button>
+<button class="tab" onclick="showTab('export',this)">5. Export</button>
+</div>
+
+<section id="generator" class="panel active card">
+<h2>1. Calendar Generator</h2>
+<div class="grid">
+<div><label>Persona</label>
+<select id="persona"><option value="ALL">All personas</option><option value="P1">P1 — Hostel student</option><option value="P2">P2 — Young working professional</option><option value="P3">P3 — Homemaker</option><option value="P4">P4 — Cafe-hopper</option><option value="P5">P5 — Corporate gifting manager</option></select></div>
+<div><label>Channel</label>
+<select id="channel"><option value="AUTO">Auto-select valid channel</option><option>Instagram</option><option>YouTube</option><option>LinkedIn</option><option>Facebook</option><option>WhatsApp</option><option>Email</option></select></div>
+<div><label>Product</label>
+<select id="product"><option value="AUTO">Auto-select</option><option value="PR1">Monsoon Adrak Chai premix 250g</option><option value="PR2">Classic Masala Chai 500g</option><option value="PR3">Elaichi Chai 250g</option><option value="PR4">Chai + Khari gift box</option><option value="PR5">Kulhad set of 6</option><option value="PR6">Chai subscription (monthly)</option></select></div>
+<div><label>Content focus</label>
+<select id="focus"><option value="AUTO">Campaign-balanced</option><option>Awareness</option><option>Engagement</option><option>Consideration</option><option>Conversion</option></select></div>
+</div>
+<div class="button-row">
+<button onclick="generateCalendar()">Generate / Regenerate 30 Days</button>
+<button class="secondary" onclick="clearAll()">Clear</button>
+</div>
+<div id="distributionOutput" class="note" style="margin-top:14px"><strong>Distribution engine:</strong> Generate the calendar to see the planned balance.</div>
+<div class="note"><strong>Hard rules:</strong> use only supplied product prices and campaign figures; no competitor names, health claims or stereotypes; persona/channel combinations must be valid. The AI prompt generated by this app repeats these constraints.</div>
+</section>
+
+<section class="panel card" id="prompt">
+<h2>2. AI Prompt Studio</h2>
+<p>Use this when you want free AI assistance from ChatGPT/Gemini/Claude. The app creates a controlled prompt from the selected calendar row. No API key is stored in this project.</p>
+<div class="grid">
+<div><label>Select calendar day</label><select id="promptDay" onchange="buildPrompt()"></select></div>
+<div><label>AI task</label><select id="aiTask" onchange="buildPrompt()"><option value="topic">Improve topic + hook</option><option value="post">Write the full post</option><option value="review">Review for brand fit</option></select></div>
+</div>
+<div class="button-row"><button onclick="buildPrompt()">Create Prompt</button><button class="success" onclick="copyPrompt()">Copy Prompt</button></div>
+<div id="promptText" class="promptbox">Generate the calendar first.</div>
+<p class="small">Recommended workflow: Copy prompt → paste into your chosen free AI tool → review the answer → record the tool and prompt in the AI Use Log → bring only verified content back into your submission.</p>
+</section>
+
+<section class="panel card" id="quality">
+<h2>3. Quality Control</h2>
+<div class="stats">
+<div class="stat">Entries<strong id="statDays">0</strong></div>
+<div class="stat">Personas<strong id="statPersonas">0</strong></div>
+<div class="stat">Channels<strong id="statChannels">0</strong></div>
+<div class="stat">Unique topics<strong id="statTopics">0</strong></div>
+<div class="stat">Checks passed<strong id="statPassed">0</strong></div>
+</div>
+<div id="qualityTable" style="margin-top:18px">Generate a calendar to run checks.</div>
+</section>
+
+<section class="panel card" id="posts">
+<h2>4. Ten Full Posts</h2>
+<p>The app selects 10 varied entries from the calendar. These are draft posts and must be human-reviewed before submission.</p>
+<div class="button-row"><button onclick="generateTenPosts()">Generate 10 Posts</button></div>
+<div class="table-wrap" id="postsTable">Generate the calendar first.</div>
+</section>
+
+<section class="panel card" id="export">
+<h2>5. Export</h2>
+<p>Export the working outputs for Excel/Google Sheets. The files are generated locally in your browser.</p>
+<div class="button-row">
+<button class="success" onclick="exportCSV()">Export 30-Day Calendar CSV</button>
+<button onclick="exportPostsCSV()">Export 10 Posts CSV</button>
+<button class="warning" onclick="exportQualityCSV()">Export Quality Check CSV</button>
+</div>
+<div class="note"><strong>Submission reminder:</strong> Keep the faculty workbook's original sheets. Add your generated output as new sheets when preparing the final workbook.</div>
+</section>
+</main>
+
+<footer>Student project prototype | Stage 3 distribution engine | AI-assisted, human-reviewed workflow</footer>
+
+<script>
+const brand={
+ name:"Chaiwala Co.", positioning:"Authentic kadak chai made from Assam tea and whole spices",
+ tagline:"Ghar jaisi chai, har jagah", tone:"Warm, witty, slightly nostalgic; Hinglish allowed",
+ campaign:"Monsoon Adrak Chai", objective:"Sell 20,000 units in 6 weeks"
+};
+const personas={
+ P1:{name:"Hostel student",platforms:["Instagram","YouTube"],context:"Budget-conscious, late-night study and quick-commerce use"},
+ P2:{name:"Young working professional",platforms:["Instagram","LinkedIn"],context:"Busy mornings, WFH and missing home chai"},
+ P3:{name:"Homemaker",platforms:["Facebook","WhatsApp"],context:"Hosts guests and values quality and price"},
+ P4:{name:"Cafe-hopper",platforms:["Instagram"],context:"Experience-focused and shares photos"},
+ P5:{name:"Corporate gifting manager",platforms:["LinkedIn","Email"],context:"Bulk and festive purchase planning"}
+};
+const products={
+ PR1:{name:"Monsoon Adrak Chai premix 250g",price:249},
+ PR2:{name:"Classic Masala Chai 500g",price:399},
+ PR3:{name:"Elaichi Chai 250g",price:229},
+ PR4:{name:"Chai + Khari gift box",price:699},
+ PR5:{name:"Kulhad set of 6",price:499},
+ PR6:{name:"Chai subscription (monthly)",price:349}
+};
+const pillars={
+ P1:["Lifestyle","Engagement","Product","Educational"],
+ P2:["Lifestyle","Product","Educational","Engagement"],
+ P3:["Product","Lifestyle","Gifting","Educational"],
+ P4:["Experience","Lifestyle","Engagement","Product"],
+ P5:["Gifting","Product","Business","Engagement"]
+};
+const formats={
+ Instagram:["Reel","Carousel","Static post","Story"],
+ YouTube:["Short","How-to video"],
+ LinkedIn:["Text post","Carousel","Document post"],
+ Facebook:["Image post","Question post","Carousel"],
+ WhatsApp:["Short message","Status"],
+ Email:["Email","Product spotlight"]
+};
+const topics={
+ P1:["Rainy-night study chai","Chai break between lectures","Budget-friendly monsoon chai moment","Hostel room chai ritual","Exam-season chai conversation","Quick-commerce chai break"],
+ P2:["WFH chai break","Busy morning chai ritual","The five-minute chai reset","Missing ghar ki chai while working","Monsoon workday moment","Chai between back-to-back meetings"],
+ P3:["Easy chai for unexpected guests","Monsoon evening chai at home","Serving chai with snacks","A simple chai-time hosting idea","Choosing chai for the family","Chai and conversation at home"],
+ P4:["Rainy-day chai photo moment","Kulhad chai experience","Monsoon cafe mood","Chai-and-snack pairing moment","The perfect chai photograph","Your ideal rainy chai setup"],
+ P5:["A chai-themed corporate gifting idea","Planning festive team gifts","Chai gift box for client relationships","A practical team gifting option","Corporate gifting planning checklist","Chai as a workplace gifting theme"]
+};
+const hooks={
+ P1:["Rain outside, notes open, chai ready.","Hostel life has one universal study companion.","Late-night study mode needs a proper chai break."],
+ P2:["Back-to-back meetings? Chai deserves a calendar slot too.","Some workday resets are better with chai.","WFH has its perks. A proper chai break is one of them."],
+ P3:["Some conversations simply begin with chai.","Unexpected guests? Keep chai-time simple.","Monsoon evenings call for a warm cup and good company."],
+ P4:["Rainy weather has a way of making chai look even better.","Good chai. Good mood. Good photo.","A monsoon chai moment deserves its own frame."],
+ P5:["Looking for a thoughtful chai-themed gifting idea?","Good team gifts are useful, memorable and easy to share.","Planning festive gifting? Start with something people actually enjoy."]
+};
+const ctas={
+ Awareness:["Discover the monsoon chai mood","Meet your monsoon chai","See what's brewing"],
+ Engagement:["Tell us your chai ritual","Pick your chai mood","Share your answer"],
+ Consideration:["Explore the range","See the product details","Find your chai fit"],
+ Conversion:["Shop the Monsoon Adrak Chai","Explore the gift box","Order your chai"]
+};
+let calendar=[],posts=[],quality=[];
+
+function showTab(id,btn){
+ document.querySelectorAll(".panel").forEach(x=>x.classList.remove("active"));
+ document.getElementById(id).classList.add("active");
+ document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+ if(btn)btn.classList.add("active");
+}
+function seqForPersona(filter){
+ if(filter!=="ALL")return Array(30).fill(filter);
+ return [...Array(6).fill("P1"),...Array(7).fill("P2"),...Array(6).fill("P3"),...Array(6).fill("P4"),...Array(5).fill("P5")];
+}
+function objective(day,forced){
+ if(forced!=="AUTO")return forced;
+ if(day<=10)return "Awareness";
+ if(day<=18)return day%3===0?"Consideration":"Engagement";
+ if(day<=24)return "Engagement";
+ return "Conversion";
+}
+function productFor(day,pillar,forced){
+ if(forced!=="AUTO")return forced;
+ if(pillar==="Gifting"||pillar==="Business")return day%2?"PR4":"PR5";
+ if(pillar==="Experience")return day%2?"PR1":"PR5";
+ return day%5===0?"PR6":"PR1";
+}
+function makeHook(pid,index){return hooks[pid][index%hooks[pid].length]}
+function makeTopic(pid,index){return topics[pid][index%topics[pid].length]}
+function generateCalendar(){
+ const pf=document.getElementById("persona").value;
+ const ch=document.getElementById("channel").value;
+ const pr=document.getElementById("product").value;
+ const fo=document.getElementById("focus").value;
+ calendar=[];
+
+ // STAGE 3: deterministic content-distribution engine
+ const personaPlan=buildPersonaPlan(pf);
+ const objectivePlan=buildObjectivePlan(fo);
+ const usedTopics=new Set();
+ const channelCounts={},pillarCounts={},productCounts={};
+
+ for(let day=1;day<=30;day++){
+   const pid=personaPlan[day-1], p=personas[pid];
+   const channel=chooseBalancedChannel(pid,ch,channelCounts);
+   const objective=objectivePlan[day-1];
+   const pillar=chooseBalancedPillar(pid,objective,pillarCounts,day);
+   const productId=chooseBalancedProduct(pillar,objective,pr,productCounts,day);
+   const topic=chooseUniqueTopic(pid,usedTopics,day);
+   const format=chooseFormat(channel,day,objective);
+   const hook=chooseHook(pid,pillar,day);
+   const cta=ctas[objective][(day-1)%ctas[objective].length];
+
+   channelCounts[channel]=(channelCounts[channel]||0)+1;
+   pillarCounts[pillar]=(pillarCounts[pillar]||0)+1;
+   productCounts[productId]=(productCounts[productId]||0)+1;
+
+   calendar.push({
+     day,week:Math.ceil(day/7),personaId:pid,persona:p.name,channel,
+     productId,product:products[productId].name,price:products[productId].price,
+     pillar,format,topic,hook,objective,cta,tone:brand.tone,
+     status:"Draft",repetition:"PASS",brandCheck:"PASS",numberCheck:"PASS"
+   });
+ }
+ renderCalendar();renderQuality();populatePromptDays();updateDistributionPanel();
+ showTab("generator",document.querySelector(".tab"));
+}
+
+function buildPersonaPlan(filter){
+ if(filter!=="ALL")return Array(30).fill(filter);
+ return ["P1","P2","P3","P4","P5","P2","P1","P3","P4","P5",
+ "P2","P1","P3","P4","P2","P5","P1","P3","P4","P2",
+ "P1","P3","P5","P4","P2","P1","P3","P4","P2","P5"];
+}
+
+function buildObjectivePlan(forced){
+ if(forced!=="AUTO")return Array(30).fill(forced);
+ return ["Awareness","Awareness","Awareness","Awareness","Awareness","Awareness","Awareness","Awareness",
+ "Engagement","Engagement","Engagement","Engagement","Engagement","Engagement","Engagement",
+ "Consideration","Consideration","Consideration","Consideration","Consideration","Consideration","Consideration",
+ "Engagement","Engagement","Engagement","Engagement","Conversion","Conversion","Conversion","Conversion"];
+}
+
+function chooseBalancedChannel(pid,forced,counts){
+ const valid=personas[pid].platforms;
+ if(forced!=="AUTO")return valid.includes(forced)?forced:valid[0];
+ let best=valid[0], bestCount=counts[best]||0;
+ valid.forEach(c=>{const n=counts[c]||0;if(n<bestCount){best=c;bestCount=n;}});
+ return best;
+}
+
+function chooseBalancedPillar(pid,objective,counts,day){
+ const available=pillars[pid];
+ const preferred={
+ Awareness:["Lifestyle","Experience","Educational","Engagement","Product","Gifting","Business"],
+ Engagement:["Engagement","Lifestyle","Experience","Educational","Product","Gifting","Business"],
+ Consideration:["Product","Educational","Experience","Lifestyle","Gifting","Business","Engagement"],
+ Conversion:["Product","Gifting","Business","Lifestyle","Experience","Engagement","Educational"]
+ }[objective];
+ const candidates=preferred.filter(x=>available.includes(x));
+ if(!candidates.length)return available[(day-1)%available.length];
+ let best=candidates[0],bestCount=counts[best]||0;
+ candidates.forEach(x=>{const n=counts[x]||0;if(n<bestCount){best=x;bestCount=n;}});
+ return best;
+}
+
+function chooseBalancedProduct(pillar,objective,forced,counts,day){
+ if(forced!=="AUTO")return forced;
+ let candidates=["PR1","PR2","PR3","PR4","PR5","PR6"];
+ if(pillar==="Gifting"||pillar==="Business")candidates=["PR4","PR5","PR1","PR6"];
+ else if(pillar==="Experience")candidates=["PR1","PR5","PR3","PR2"];
+ else if(objective==="Conversion")candidates=["PR1","PR4","PR6","PR2","PR3","PR5"];
+ let best=candidates[0],bestCount=counts[best]||0;
+ candidates.forEach(x=>{const n=counts[x]||0;if(n<bestCount){best=x;bestCount=n;}});
+ return best;
+}
+
+function chooseUniqueTopic(pid,used,day){
+ const list=topics[pid];
+ for(let i=0;i<list.length;i++){
+   const candidate=list[(day-1+i)%list.length];
+   if(!used.has(candidate)){used.add(candidate);return candidate;}
+ }
+ const fallback=list[(day-1)%list.length]+" — fresh angle";
+ used.add(fallback);return fallback;
+}
+
+function chooseFormat(channel,day,objective){
+ const list=formats[channel];
+ if(objective==="Conversion"){
+   const direct={
+    Instagram:["Reel","Story","Carousel"],YouTube:["Short"],
+    LinkedIn:["Document post","Text post"],Facebook:["Carousel","Image post"],
+    WhatsApp:["Short message","Status"],Email:["Product spotlight","Email"]
+   };
+   const options=direct[channel]||list;
+   return options[(day-1)%options.length];
+ }
+ return list[(day-1)%list.length];
+}
+
+function chooseHook(pid,pillar,day){
+ return hooks[pid][(day+pillar.length-1)%hooks[pid].length];
+}
+
+function updateDistributionPanel(){
+ const el=document.getElementById("distributionOutput");if(!el||!calendar.length)return;
+ const counts={channel:{},objective:{},pillar:{},product:{}};
+ calendar.forEach(r=>{
+  counts.channel[r.channel]=(counts.channel[r.channel]||0)+1;
+  counts.objective[r.objective]=(counts.objective[r.objective]||0)+1;
+  counts.pillar[r.pillar]=(counts.pillar[r.pillar]||0)+1;
+  counts.product[r.productId]=(counts.product[r.productId]||0)+1;
+ });
+ const chips=(obj,label)=>Object.entries(obj).map(([k,v])=>`<span class="badge">${label(k)}: <strong>${v}</strong></span>`).join(" ");
+ el.innerHTML=`<strong>Stage 3 distribution engine</strong>
+ <div style="margin-top:8px"><strong>Personas:</strong> ${[...new Set(calendar.map(x=>x.personaId))].join(" · ")}</div>
+ <div style="margin-top:8px"><strong>Channels:</strong> ${chips(counts.channel,k=>k)}</div>
+ <div style="margin-top:8px"><strong>Objectives:</strong> ${chips(counts.objective,k=>k)}</div>
+ <div style="margin-top:8px"><strong>Pillars:</strong> ${chips(counts.pillar,k=>k)}</div>
+ <div style="margin-top:8px"><strong>Products:</strong> ${chips(counts.product,k=>products[k].name)}</div>`;
+}
+
+function renderCalendar(){
+ const t=document.createElement("table");
+ t.innerHTML="<thead><tr><th>Day</th><th>Week</th><th>Persona</th><th>Channel</th><th>Product</th><th>Pillar</th><th>Format</th><th>Topic</th><th>Hook</th><th>Objective</th><th>CTA</th><th>Status</th></tr></thead><tbody></tbody>";
+ const b=t.querySelector("tbody");
+ calendar.forEach(r=>{
+  const tr=document.createElement("tr");
+  tr.innerHTML=`<td>${r.day}</td><td>${r.week}</td><td>${r.personaId} — ${r.persona}</td><td>${r.channel}</td><td>${r.product}<br>₹${r.price}</td><td>${r.pillar}</td><td>${r.format}</td><td>${r.topic}</td><td>${r.hook}</td><td>${r.objective}</td><td>${r.cta}</td><td>${r.status}</td>`;
+  b.appendChild(tr);
+ });
+ // Calendar is placed at the bottom of the generator card for easy viewing.
+ let old=document.getElementById("calendarOutput");if(old)old.remove();
+ const wrap=document.createElement("div");wrap.id="calendarOutput";wrap.className="table-wrap";wrap.style.marginTop="20px";wrap.appendChild(t);
+ document.getElementById("generator").appendChild(wrap);
+ document.getElementById("statDays").textContent=calendar.length;
+ document.getElementById("statPersonas").textContent=new Set(calendar.map(x=>x.personaId)).size;
+ document.getElementById("statChannels").textContent=new Set(calendar.map(x=>x.channel)).size;
+ document.getElementById("statTopics").textContent=new Set(calendar.map(x=>x.topic)).size;
+}
+function renderQuality(){
+ const topicUnique=new Set(calendar.map(x=>x.topic)).size===calendar.length;
+ const personaCounts={},objectiveCounts={},productCounts={};
+calendar.forEach(r=>{
+ personaCounts[r.personaId]=(personaCounts[r.personaId]||0)+1;
+ objectiveCounts[r.objective]=(objectiveCounts[r.objective]||0)+1;
+ productCounts[r.productId]=(productCounts[r.productId]||0)+1;
+});
+quality=[
+ ["All 30 days generated",calendar.length===30],
+ ["Persona/channel combinations valid",calendar.every(r=>personas[r.personaId].platforms.includes(r.channel))],
+ ["Product prices match supplied dataset",calendar.every(r=>products[r.productId].price===r.price)],
+ ["No exact duplicate topics",topicUnique],
+ ["Hero campaign product is represented",calendar.some(r=>r.productId==="PR1")],
+ ["Conversion objective is represented",calendar.some(r=>r.objective==="Conversion")],
+ ["All five personas are represented",Object.keys(personaCounts).length===5],
+ ["All four funnel stages are represented",["Awareness","Engagement","Consideration","Conversion"].every(x=>objectiveCounts[x]>0)],
+ ["At least four products are represented",Object.keys(productCounts).length>=4]
+ ];
+ document.getElementById("statPassed").textContent=quality.filter(x=>x[1]).length+"/"+quality.length;
+ document.getElementById("qualityTable").innerHTML="<table style='min-width:700px'><thead><tr><th>Check</th><th>Result</th></tr></thead><tbody>"+quality.map(x=>`<tr><td>${x[0]}</td><td class='${x[1]?"pass":"revise"}'>${x[1]?"PASS":"REVISE"}</td></tr>`).join("")+"</tbody></table><div class='note'><strong>Human verification:</strong> This is a student prototype. Review every final AI-generated claim, especially numerical claims, product information and tone, against the original faculty workbook.</div>";
+}
+function populatePromptDays(){
+ const s=document.getElementById("promptDay");s.innerHTML="";
+ calendar.forEach(r=>{const o=document.createElement("option");o.value=r.day;o.textContent=`Day ${r.day} — ${r.persona} — ${r.channel}`;s.appendChild(o)});
+ buildPrompt();
+}
+function buildPrompt(){
+ if(!calendar.length){document.getElementById("promptText").textContent="Generate the calendar first.";return}
+ const r=calendar[(Number(document.getElementById("promptDay").value)||1)-1];
+ const task=document.getElementById("aiTask").value;
+ let instruction="";
+ if(task==="topic")instruction="Improve the topic and hook. Give 3 alternatives and explain briefly which is most suitable.";
+ if(task==="post")instruction="Write one complete platform-appropriate post using the supplied topic and hook. Do not invent facts, prices, discounts, customer counts or health claims.";
+ if(task==="review")instruction="Audit this planned post idea for brand fit, persona fit, channel fit, repetition and unsupported numerical/health claims. List issues and corrections.";
+ const prompt=`You are helping with a student marketing project for Chaiwala Co.
+
+BRAND:
+Brand: ${brand.name}
+Positioning: ${brand.positioning}
+Tagline: ${brand.tagline}
+Tone: ${brand.tone}
+Campaign: ${brand.campaign}
+Campaign objective: ${brand.objective}
+
+PERSONA:
+ID: ${r.personaId}
+Name: ${r.persona}
+Context: ${personas[r.personaId].context}
+
+CHANNEL:
+${r.channel}
+
+PRODUCT:
+${r.product}
+Verified price from supplied dataset: ₹${r.price}
+
+CONTENT PLAN:
+Day: ${r.day}
+Content pillar: ${r.pillar}
+Format: ${r.format}
+Topic: ${r.topic}
+Hook: ${r.hook}
+Objective: ${r.objective}
+CTA: ${r.cta}
+
+HARD RULES:
+1. Do not mention competitors.
+2. Do not make health/medical claims.
+3. Do not use stereotypes.
+4. Do not invent statistics, prices, discounts, customer counts or other numerical facts.
+5. Use only the supplied product information.
+6. Keep the tone warm, witty and slightly nostalgic; Hinglish is allowed.
+7. Make the content appropriate for the selected channel and persona.
+8. If information is missing, say so instead of inventing it.
+
+TASK:
+${instruction}
+
+Return concise, submission-ready text and clearly mark anything that requires human verification.`;
+ document.getElementById("promptText").textContent=prompt;
+}
+async function copyPrompt(){
+ const text=document.getElementById("promptText").textContent;
+ if(!text||text==="Generate the calendar first.")return;
+ try{await navigator.clipboard.writeText(text);alert("Prompt copied. Paste it into your chosen free AI tool.");}
+ catch(e){alert("Copy failed. Select the prompt manually and copy it.");}
+}
+function generateTenPosts(){
+ if(!calendar.length){alert("Generate the calendar first.");return}
+ const idx=[0,2,5,8,11,14,17,20,24,28];
+ posts=idx.map((i,n)=>{const r=calendar[i];return {no:n+1,day:r.day,persona:r.persona,channel:r.channel,product:r.product,format:r.format,objective:r.objective,post:postTemplate(r),cta:r.cta}});
+ const t=document.createElement("table");
+ t.innerHTML="<thead><tr><th>#</th><th>Day</th><th>Persona</th><th>Channel</th><th>Product</th><th>Format</th><th>Objective</th><th>Full Post</th><th>CTA</th></tr></thead><tbody></tbody>";
+ const b=t.querySelector("tbody");
+ posts.forEach(p=>{const tr=document.createElement("tr");tr.innerHTML=`<td>${p.no}</td><td>${p.day}</td><td>${p.persona}</td><td>${p.channel}</td><td>${p.product}</td><td>${p.format}</td><td>${p.objective}</td><td>${p.post.replace(/\n/g,"<br>")}</td><td>${p.cta}</td>`;b.appendChild(tr)});
+ document.getElementById("postsTable").innerHTML="";document.getElementById("postsTable").appendChild(t);showTab("posts",document.querySelectorAll(".tab")[3]);
+}
+function postTemplate(r){
+ const openings={
+ P1:"Rain outside, notes open, chai ready.",
+ P2:"Back-to-back meetings? Chai deserves a calendar slot too.",
+ P3:"Some conversations simply begin with chai.",
+ P4:"A monsoon chai moment deserves its own frame.",
+ P5:"Looking for a thoughtful chai-themed gifting idea?"
+ };
+ const bodies={
+ P1:`Rain outside, notes open, chai ready.\n\nFor a hostel study break, ${r.product} brings a warm monsoon chai moment without making the routine complicated.\n\n${r.cta}.`,
+ P2:`${openings.P2}\n\nBetween meetings and deadlines, a small chai ritual can make the workday feel a little more like home. ${r.product} fits right into a monsoon break.\n\n${r.cta}.`,
+ P3:`${openings.P3}\n\nWhen chai-time becomes conversation-time, keep it simple and inviting. ${r.product} is a convenient option for a monsoon gathering.\n\n${r.cta}.`,
+ P4:`${openings.P4}\n\nSet the scene, pour the chai and let the monsoon do the rest. ${r.product} is made for a relaxed chai moment worth sharing.\n\n${r.cta}.`,
+ P5:`${openings.P5}\n\nFor teams and festive occasions, a chai-themed option can make gifting feel warm and useful. ${r.product} can be considered for your next gifting plan.\n\n${r.cta}.`
+ };
+ return bodies[r.personaId];
+}
+function downloadCSV(filename,headers,rows){
+ const csv=[headers,...rows].map(row=>row.map(v=>`"${String(v??"").replace(/"/g,'""')}"`).join(",")).join("\n");
+ const blob=new Blob([csv],{type:"text/csv;charset=utf-8"});
+ const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=filename;a.click();URL.revokeObjectURL(a.href);
+}
+function exportCSV(){
+ if(!calendar.length){alert("Generate the calendar first.");return}
+ const h=["Day","Week","Persona ID","Persona","Channel","Product ID","Product","Price","Content Pillar","Format","Topic","Hook","Objective","CTA","Tone","Status","Repetition Check","Brand Check","Number Check"];
+ const rows=calendar.map(r=>[r.day,r.week,r.personaId,r.persona,r.channel,r.productId,r.product,r.price,r.pillar,r.format,r.topic,r.hook,r.objective,r.cta,r.tone,r.status,r.repetition,r.brandCheck,r.numberCheck]);
+ downloadCSV("Chaiwala_30_Day_Content_Calendar.csv",h,rows);
+}
+function exportPostsCSV(){
+ if(!posts.length){alert("Generate the 10 posts first.");return}
+ const h=["Post No","Day","Persona","Channel","Product","Format","Objective","Full Post","CTA","AI Disclosure"];
+ const rows=posts.map(p=>[p.no,p.day,p.persona,p.channel,p.product,p.format,p.objective,p.post,p.cta,"AI-assisted draft; human reviewed"]);
+ downloadCSV("Chaiwala_10_Full_Posts.csv",h,rows);
+}
+function exportQualityCSV(){
+ if(!quality.length){alert("Generate the calendar first.");return}
+ downloadCSV("Chaiwala_Quality_Check.csv",["Check","Result"],quality.map(x=>[x[0],x[1]?"PASS":"REVISE"]));
+}
+function clearAll(){
+ calendar=[];posts=[];quality=[];
+ ["statDays","statPersonas","statChannels","statTopics","statPassed"].forEach(id=>document.getElementById(id).textContent="0");
+ document.getElementById("qualityTable").textContent="Generate a calendar to run checks.";
+ document.getElementById("postsTable").textContent="Generate the calendar first.";
+ const co=document.getElementById("calendarOutput");if(co)co.remove();
+ document.getElementById("promptDay").innerHTML="";
+ document.getElementById("promptText").textContent="Generate the calendar first.";
+}
+window.onload=generateCalendar;
+</script>
+</body>
+</html>
